@@ -26,3 +26,8 @@ client/*.sw?
 
 # SERVER
 server/node_modules
+server/package-lock.json
+
+server/.env
+
+server/src/generated/prisma
