@@ -1,51 +1,77 @@
 const { PrismaClient } = require("../generated/prisma/client");
 const prisma = new PrismaClient();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { generateToken } = require("../config/jwt");
 
 class UserController {
   static async getUsuarios(req, res) {
     try {
-      let { page = 1, limit = 10, search = "" } = req.query;
+      let { page = 1, limit = 10, view = "general", search = "", usuario = "", tipo_usuario = "" } =
+        req.query;
+  
       page = parseInt(page);
       limit = parseInt(limit);
-
       const skip = (page - 1) * limit;
-
-      const [usuarios, total] = await Promise.all([
-        prisma.usuario.findMany({
-          skip,
-          take: limit,
-          where: {
+  
+      let where = {};
+  
+      if (view === "general") {
+        if (search) {
+          where = {
             OR: [
-              { usuario: { contains: search } },
-              { correo: { contains: search } },
-              {
-                nombre: { contains: search },
-              },
-              {
-                apell_paterno: { contains: search },
-              },
-              {
-                apell_materno: { contains: search },
-              },
-            ],
-          },
-          orderBy: { id: "asc" },
-        }),
-        prisma.usuario.count({
-          where: {
-            OR: [
-              { usuario: { contains: search } },
-              { correo: { contains: search } },
               { nombre: { contains: search } },
               { apell_paterno: { contains: search } },
               { apell_materno: { contains: search } },
             ],
-          },
+          };
+        }
+      } else if (view === "roles") {
+        where = {
+          AND: [
+            usuario ? { usuario: { contains: usuario } } : {},
+            tipo_usuario ? { tipo_usuario: { contains: tipo_usuario } } : {},
+          ],
+        };
+      }
+  
+      const [usuarios, total] = await Promise.all([
+        prisma.usuario.findMany({
+          skip,
+          take: limit,
+          where,
+          orderBy: { id: "asc" },
+          select:
+            view === "general"
+              ? {
+                  id: true,
+                  usuario: true,
+                  correo: true,
+                  nombre: true,
+                  apell_paterno: true,
+                  apell_materno: true,
+                }
+              : {
+                  id: true,
+                  usuario: true,
+                  tipo_usuario: true,
+                },
         }),
+        prisma.usuario.count({ where }),
       ]);
-
+  
+      let data = usuarios;
+      if (view === "general") {
+        data = usuarios.map((u) => ({
+          id: u.id,
+          usuario: u.usuario,
+          correo: u.correo,
+          nombre_completo: `${u.nombre} ${u.apell_paterno} ${u.apell_materno}`,
+        }));
+      }
+  
       res.json({
-        data: usuarios,
+        data,
         total,
         page,
         totalPages: Math.ceil(total / limit),
@@ -54,11 +80,18 @@ class UserController {
       res.status(500).json({ error: "Error al obtener usuarios", details: error.message });
     }
   }
+  
 
   static async createUsuario(req, res) {
     try {
       const { usuario, correo, nombre, apell_paterno, apell_materno, contrasena, tipo_usuario } =
         req.body;
+
+      if (!contrasena || contrasena.length < 4) {
+        return res.status(400).json({ error: "La contraseña debe tener al menos 4 caracteres" });
+      }
+
+      const hashedPassword = await bcrypt.hash(contrasena, 10);
 
       const nuevoUsuario = await prisma.usuario.create({
         data: {
@@ -67,13 +100,22 @@ class UserController {
           nombre,
           apell_paterno,
           apell_materno,
-          contrasena,
+          contrasena: hashedPassword,
           tipo_usuario,
         },
       });
 
-      res.status(201).json({ message: "Usuario creado con éxito", data: nuevoUsuario });
+      const { contrasena: _, ...userSinPassword } = nuevoUsuario;
+
+      res.status(201).json({ message: "Usuario creado con éxito", data: userSinPassword });
     } catch (error) {
+      if (error.code === "P2002") {
+        const field = error.meta?.target?.includes("usuario")
+          ? "usuario"
+          : "correo";
+        return res.status(400).json({ error: `El ${field} ya está registrado` });
+      }
+
       res.status(500).json({ error: "Error al crear usuario", details: error.message });
     }
   }
@@ -116,6 +158,42 @@ class UserController {
       res.status(500).json({ error: "Error al eliminar usuario", details: error.message });
     }
   }
+
+  // Controller para el login 
+  static async login(req, res) {
+    try {
+      const { usuario, correo, contrasena } = req.body;
+  
+      const user = await prisma.usuario.findFirst({
+        where: { OR: [{ usuario }, { correo }] },
+      });
+  
+      if (!user) return res.status(400).json({ error: "Usuario o correo no encontrado" });
+  
+      const validPassword = await bcrypt.compare(contrasena, user.contrasena);
+      if (!validPassword) return res.status(400).json({ error: "Contraseña incorrecta" });
+  
+      const token = generateToken({ id: user.id, usuario: user.usuario, rol: user.tipo_usuario });
+  
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 1000,
+      });
+  
+      const { contrasena: _, ...userSinPassword } = user;
+      res.json({ message: "Login exitoso", user: userSinPassword });
+    } catch (error) {
+      res.status(500).json({ error: "Error en login", details: error.message });
+    }
+  }
+
+  static async logout(req, res) {
+    res.clearCookie("token");
+    res.json({ message: "Sesión cerrada con éxito" });
+  }
+  
 }
 
 module.exports = UserController;

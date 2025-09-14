@@ -1,6 +1,7 @@
 const express = require("express");
 const userRoute = require("./routes/userRoutes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
+const cookieParser = require("cookie-parser");
 
 class App {
   constructor() {
@@ -11,6 +12,7 @@ class App {
 
   middlewares() {
     this.server.use(express.json());
+    this.server.use(cookieParser());
   }
 
   routes() {
