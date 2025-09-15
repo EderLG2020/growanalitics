@@ -1,7 +1,6 @@
 const { PrismaClient } = require("../generated/prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { generateToken } = require("../config/jwt");
 
 class UserController {

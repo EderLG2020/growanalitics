@@ -6,9 +6,9 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "API",
+      title: "Gorwanalitics API",
       version: "1.0.0",
-      description: "Documentación con swagger",
+      description: "Documentación",
     },
     servers: [
       {

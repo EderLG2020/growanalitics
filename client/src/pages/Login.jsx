@@ -13,43 +13,16 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MdLock } from "react-icons/md";
 import { AiOutlineGoogle } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
-import { loginService } from "../api/auth";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "../store/authSlice";
+
+import { useLogin } from "../hook/useLogin";
 
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const navigate = useNavigate();
+  const { login } = useLogin();
 
-  const dispatch = useDispatch();
-
-  const onFinish = async (values) => {
-    try {
-      const payload = {
-        usuario: values.username,
-        contrasena: values.password,
-      };
-  
-      const data = await loginService(payload);
-  
-      console.log("Login exitoso:", data);
-  
-      const { nombre, tipo_usuario, correo, usuario } = data.user;
-  
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ nombre, tipo_usuario, correo, usuario })
-      );
-  
-      dispatch(loginSuccess(data.user));
-  
-      navigate("/tabla1");
-      console.log("Se navegó a tabla1?");
-    } catch (error) {
-      console.error("Error en login:", error);
-    }
+  const onFinish = (values) => {
+    login(values);
   };
   
 

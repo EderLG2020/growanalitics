@@ -7,43 +7,19 @@ import {
     Typography,
     Card,
     Select,
-    message,
   } from "antd";
   import { FaUser } from "react-icons/fa";
-  import { MdLock, MdEmail } from "react-icons/md";
-  import { useNavigate } from "react-router-dom";
-  import { createUsuario } from "../api/users"; 
+  import { MdLock, MdEmail } from "react-icons/md"; 
+  import { useSignUp } from "../hook/useSignUp";
   
   const { Title, Text } = Typography;
   
   export default function SignUp() {
-    const navigate = useNavigate();
     const [form] = Form.useForm();
-  
-    const onFinish = async (values) => {
-      try {
-        const payload = {
-          usuario: values.usuario,
-          correo: values.correo,
-          nombre: values.nombre,
-          apell_paterno: values.apell_paterno,
-          apell_materno: values.apell_materno,
-          contrasena: values.contrasena,
-          tipo_usuario: values.tipo_usuario,
-        };
-  
-        await createUsuario(payload);
-        message.success("Usuario creado correctamente");
-        navigate("/");
-      } catch (error) {
-        console.error("Error creando usuario:", error);
-        message.error("No se pudo crear el usuario");
-      }
-    };
-  
+    const { onFinish } = useSignUp();
+
     return (
       <Row justify="center" align="middle" className="min-h-screen">
-        {/* Imagen lateral */}
         <Col
           xs={0}
           md={12}
@@ -65,7 +41,6 @@ import {
           </Text>
         </Col>
   
-        {/* Formulario */}
         <Col xs={24} md={12} className="p-8 flex items-center justify-center">
           <Card
             className="w-full max-w-md shadow-lg rounded-2xl"

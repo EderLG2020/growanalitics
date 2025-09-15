@@ -4,7 +4,7 @@
   "description": "examen tecnico",
   "main": "./src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "seed": "node prisma/seed.js",
     "clean": "node prisma/clean.js",
     "dev": "node ./src/server.js"

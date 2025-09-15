@@ -114,7 +114,7 @@ const handleEdit = (record) => {
         dataSource={data}
         rowKey="id"
         pagination={pagination}
-        loading={loading} // loading global tabla
+        loading={loading}
         onChange={handleTableChange}
         style={{ background: "transparent" }}
         rowClassName={(_, index) =>
