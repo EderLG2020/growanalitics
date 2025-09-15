@@ -2,6 +2,7 @@ import { Modal } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../store/modalSlice";
 import EditUserForm from "./EditUserForm";
+import ConfirmDeleteUser from "./ConfirmDeleteUser";
 
 export default function GlobalModal() {
   const dispatch = useDispatch();
@@ -11,8 +12,8 @@ export default function GlobalModal() {
 
   let content = null;
   if (type === "editUser") content = <EditUserForm {...props} />;
-  // if (type === "deleteUser") content = <DeleteConfirmation {...props} />;
-  // etc.
+  if (type === "confirmDeleteUser") content = <ConfirmDeleteUser {...props} />;
+
 
   return (
     <Modal

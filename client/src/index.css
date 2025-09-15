@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.ant-table-wrapper .ant-table {
+    background-color: transparent;
+}
