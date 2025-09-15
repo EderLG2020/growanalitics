@@ -209,7 +209,6 @@ class UserController {
     }
   }
 
-  // Controller para el login 
   static async login(req, res) {
     try {
       const { usuario, correo, contrasena } = req.body;

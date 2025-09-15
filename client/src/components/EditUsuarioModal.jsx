@@ -1,14 +1,27 @@
 import { Modal, Form, Input, Button } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { closeModal } from "../store/modalSlice";
 
-export default function EditUsuarioModal({ isOpen, onClose, user, onSave }) {
+export default function EditUsuarioModal() {
+  const dispatch = useDispatch();
+  const { isOpen, user } = useSelector((state) => state.modal);
+
+  const [form] = Form.useForm();
+
+  const handleSave = (values) => {
+    console.log("Guardar cambios:", values);
+    dispatch(closeModal());
+  };
+
   return (
     <Modal
       title="Editar usuario"
       open={isOpen}
-      onCancel={onClose}
+      onCancel={() => dispatch(closeModal())}
       footer={null}
+      afterOpenChange={(open) => open && form.setFieldsValue(user || {})}
     >
-      <Form initialValues={user} onFinish={onSave} layout="vertical">
+      <Form form={form} onFinish={handleSave} layout="vertical">
         <Form.Item name="usuario" label="Usuario">
           <Input />
         </Form.Item>

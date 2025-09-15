@@ -1,10 +1,10 @@
 import { Table, Input, Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
 import useUsuarios from "../hook/useUsuarios";
-import EditUsuarioModal from "../components/EditUsuarioModal";
+import { openModal } from "../store/modalSlice";
 
-export default function Tabla1() {
+export default function TablaUsuarios() {
   const {
     data,
     pagination,
@@ -14,18 +14,18 @@ export default function Tabla1() {
     handleTableChange,
   } = useUsuarios();
 
-  const [editingUser, setEditingUser] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleEdit = (record) => {
-    setEditingUser(record);
-    setIsModalOpen(true);
-  };
-
-  const handleSave = (values) => {
-    setIsModalOpen(false);
-    setEditingUser(null);
-    // Podrías recargar los datos del backend aquí si es necesario
+    dispatch(
+      openModal({
+        title: "Editar usuario",
+        type: "editUser",
+        props: { user: record },
+        width: 500,
+        footer: null,
+      })
+    );
   };
 
   const handleDelete = (id) => {
@@ -69,13 +69,7 @@ export default function Tabla1() {
         pagination={pagination}
         loading={loading}
         onChange={handleTableChange}
-      />
-
-      <EditUsuarioModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        user={editingUser}
-        onSave={handleSave}
+        
       />
     </div>
   );

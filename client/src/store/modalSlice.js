@@ -4,19 +4,32 @@ const modalSlice = createSlice({
   name: "modal",
   initialState: {
     isOpen: false,
+    title: "",
+    type: null,
+    props: {},
+    footer: null,
+    width: 600,
   },
   reducers: {
-    openModal: (state) => {
+    openModal: (state, action) => {
+      const { title, type, props, footer, width } = action.payload;
       state.isOpen = true;
+      state.title = title || "";
+      state.type = type || null;
+      state.props = props || {};
+      state.footer = footer ?? null;
+      state.width = width || 600;
     },
     closeModal: (state) => {
       state.isOpen = false;
-    },
-    toggleModal: (state) => {
-      state.isOpen = !state.isOpen;
+      state.type = null;
+      state.props = {};
+      state.title = "";
+      state.footer = null;
     },
   },
 });
 
-export const { openModal, closeModal, toggleModal } = modalSlice.actions;
+export const { openModal, closeModal } = modalSlice.actions;
+
 export default modalSlice.reducer;

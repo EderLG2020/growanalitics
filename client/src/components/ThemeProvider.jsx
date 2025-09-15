@@ -1,14 +1,12 @@
 import { ConfigProvider, theme } from "antd";
 import { createContext, useContext, useState, useEffect } from "react";
 
-// Creamos un contexto para acceder al tema desde cualquier parte
 const ThemeContext = createContext();
 
 export default function ThemeProvider({ children }) {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const [isDark, setIsDark] = useState(prefersDark);
 
-  // Sincronizar con cambios del SO (si el usuario cambia manualmente)
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = (e) => setIsDark(e.matches);
@@ -22,7 +20,7 @@ export default function ThemeProvider({ children }) {
         theme={{
           algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           token: {
-            colorPrimary: isDark ? "#177ddc" : "#1890ff", // Ejemplo de customización
+            colorPrimary: isDark ? "#177ddc" : "#1890ff",
           },
         }}
       >
@@ -32,5 +30,4 @@ export default function ThemeProvider({ children }) {
   );
 }
 
-// Hook para acceder al tema
 export const useTheme = () => useContext(ThemeContext);
