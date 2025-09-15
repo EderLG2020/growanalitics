@@ -3,3 +3,15 @@
 .ant-table-wrapper .ant-table {
     background-color: transparent;
 }
+.ant-table-cell {
+    padding: 4px 8px; /* celdas compactas */
+  }
+  
+  .ant-form-item {
+    margin: 0 !important;
+  }
+  
+  .ant-input {
+    border-radius: 0;
+  }
+  
