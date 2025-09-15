@@ -10,6 +10,7 @@ import {
 } from "antd";
 import { FacebookFilled, TwitterSquareFilled } from "@ant-design/icons";
 import { FaUser } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { MdLock } from "react-icons/md";
 import { AiOutlineGoogle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ const { Title, Text } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const onFinish = async (values) => {
@@ -58,9 +60,9 @@ navigate("/tabla1");
         </div>
 
         <Text className="hidden md:block text-center mb-6">
-          <a href="/signup" className="text-gray-800 hover:underline">
-            Create an account
-          </a>
+        <Link to="/signup" className="text-gray-800 hover:underline">
+          Create an account
+        </Link>
         </Text>
       </Col>
 
@@ -135,9 +137,9 @@ navigate("/tabla1");
           </div>
 
           <Text className="block md:hidden text-center mt-6">
-            <a href="/signup" className="text-gray-800 hover:underline">
-              Create an account
-            </a>
+          <Link to="/signup" className="text-gray-800 hover:underline">
+          Create an account
+        </Link>
           </Text>
         </Card>
       </Col>

@@ -6,6 +6,7 @@ import Tabla1 from "./pages/Tabla1";
 import Tabla2 from "./pages/Tabla2";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ThemeProvider from "./components/ThemeProvider";
+import Signup from "./pages/Signup";
 
 
 export default function App() {
@@ -16,6 +17,9 @@ export default function App() {
         <Route path="/" element={<AuthLayout />}>
           <Route index element={<Login />} />
         </Route>
+        <Route path="/signup" element={<AuthLayout />}>
+          <Route index element={<Signup />} />
+        </Route>
 
         <Route
           path="/"
@@ -25,6 +29,8 @@ export default function App() {
             </PrivateRoute>
           }
         >
+
+       
           <Route path="tabla1" element={<Tabla1 />} />
           <Route path="tabla2" element={<Tabla2 />} />
         </Route>

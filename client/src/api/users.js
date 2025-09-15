@@ -14,3 +14,8 @@ export const editUsuarios = async (id, payload) => {
   const { data } = await API.put(`/usuarios/${id}`, payload);
   return data; 
 };
+
+export const createUsuario = async (payload) => {
+  const { data } = await axios.post("/usuarios", payload);
+  return data;
+};
