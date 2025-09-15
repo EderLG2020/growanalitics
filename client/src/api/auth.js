@@ -1,7 +1,13 @@
 import API from "./axios";
 
 export const loginService = async (credentials) => {
-  const { data } = await API.post("/usuarios/login", credentials);
+  const { data } = await API.post("/usuarios/login", credentials, {
+    withCredentials: true,
+  });
+  return data;
+};
+export const logoutService = async (credentials) => {
+  const { data } = await API.post("/usuarios/logout", credentials);
   return data;
 };
 

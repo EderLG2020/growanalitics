@@ -6,12 +6,13 @@ import App from "./App";
 import "./index.css"; 
 import '@ant-design/v5-patch-for-react-19';
 import GlobalModal from "./components/GlobalModal";
-
-
+import { App as AntdApp } from "antd"; 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <App />
-    <GlobalModal /> 
+    <AntdApp>  
+      <App />
+      <GlobalModal /> 
+    </AntdApp>
   </Provider>
 );

@@ -13,13 +13,13 @@ import { FaUser } from "react-icons/fa";
 import { MdLock } from "react-icons/md";
 import { AiOutlineGoogle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { loginService } from "../api/auth"; 
+import { loginService } from "../api/auth";
 import { useDispatch } from "react-redux";
+import { loginSuccess } from "../store/authSlice";
 
 const { Title, Text } = Typography;
 
 const Login = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -33,8 +33,9 @@ const Login = () => {
       const data = await loginService(payload);
 
       console.log("Login exitoso:", data);
-      dispatch(loginSuccess(data.user));
-      navigate("/tabla1");
+      dispatch(loginSuccess(data.user)); // 👈 aquí va data completo
+navigate("/tabla1");
+      console.log("Se navego a tabla1?");
     } catch (error) {
       console.error("Error en login:", error);
     }
@@ -66,8 +67,8 @@ const Login = () => {
       <Col xs={24} md={12} className="p-8 flex items-center justify-center">
         <Card
           className="w-full max-w-md shadow-lg rounded-2xl"
-          bordered={false}
-          bodyStyle={{ padding: "2rem" }}
+          variant="borderless"
+          styles={{ body: { padding: "2rem" } }}
         >
           <Title level={2} className="text-center mb-6">
             Sign In
