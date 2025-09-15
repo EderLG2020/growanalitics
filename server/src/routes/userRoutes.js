@@ -31,10 +31,23 @@ const router = Router();
  *           default: general
  *         description: Define el tipo de vista de la tabla
  *       - in: query
+ *         name: sortField
+ *         schema:
+ *           type: string
+ *           enum: [id, usuario, correo, nombre_completo, tipo_usuario]
+ *         description: Campo por el cual ordenar
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [ascend, descend]
+ *           default: ascend
+ *         description: Dirección del ordenamiento (el backend lo convierte a asc/desc)
+ *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Texto para filtrar usuarios (solo aplica en `view=general`, busca en nombre completo)
+ *         description: Texto para filtrar usuarios (solo aplica en `view=general`, busca en nombre, apell_paterno, apell_materno)
  *       - in: query
  *         name: usuario
  *         schema:

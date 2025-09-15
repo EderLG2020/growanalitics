@@ -1,7 +1,7 @@
 const { verifyToken } = require("../config/jwt");
 
 function authMiddleware(req, res, next) {
-  const token = req.cookies.token; // ahora viene de la cookie
+  const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: "Token no encontrado" });
 
   try {

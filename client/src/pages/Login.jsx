@@ -12,12 +12,32 @@ import { FacebookFilled, TwitterSquareFilled } from "@ant-design/icons";
 import { FaUser } from "react-icons/fa";
 import { MdLock } from "react-icons/md";
 import { AiOutlineGoogle } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { loginService } from "../api/auth"; 
+import { useDispatch } from "react-redux";
 
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log("Login:", values);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onFinish = async (values) => {
+    try {
+      const payload = {
+        usuario: values.username,
+        contrasena: values.password,
+      };
+
+      const data = await loginService(payload);
+
+      console.log("Login exitoso:", data);
+      dispatch(loginSuccess(data.user));
+      navigate("/tabla1");
+    } catch (error) {
+      console.error("Error en login:", error);
+    }
   };
 
   return (

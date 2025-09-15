@@ -2,6 +2,7 @@ const express = require("express");
 const userRoute = require("./routes/userRoutes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 class App {
   constructor() {
@@ -13,6 +14,10 @@ class App {
   middlewares() {
     this.server.use(express.json());
     this.server.use(cookieParser());
+     this.server.use(cors({
+      origin: "http://localhost:5173",
+      credentials: true,
+    }));
   }
 
   routes() {

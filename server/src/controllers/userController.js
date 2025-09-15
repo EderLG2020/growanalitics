@@ -7,26 +7,54 @@ const { generateToken } = require("../config/jwt");
 class UserController {
   static async getUsuarios(req, res) {
     try {
-      let { page = 1, limit = 10, view = "general", search = "", usuario = "", tipo_usuario = "" } =
-        req.query;
+      let {
+        page = 1,
+        limit = 10,
+        view = "general",
+        search = "",
+        usuario = "",
+        tipo_usuario = "",
+        sortField = "id",
+        sortOrder = "ascend",
+      } = req.query;
   
       page = parseInt(page);
       limit = parseInt(limit);
       const skip = (page - 1) * limit;
   
       let where = {};
-  
       if (view === "general") {
         if (search) {
-          where = {
-            OR: [
-              { nombre: { contains: search } },
-              { apell_paterno: { contains: search } },
-              { apell_materno: { contains: search } },
-            ],
-          };
+          const terms = search.trim().split(/\s+/);
+      
+          if (terms.length === 1) {
+            where = {
+              OR: [
+                { nombre: { contains: terms[0] } },
+                { apell_paterno: { contains: terms[0] } },
+                { apell_materno: { contains: terms[0] } },
+              ],
+            };
+          }
+          else if (terms.length === 2) {
+            where = {
+              AND: [
+                { nombre: { contains: terms[0]} },
+                { apell_paterno: { contains: terms[1] } },
+              ],
+            };
+          } else if (terms.length >= 3) {
+            where = {
+              AND: [
+                { nombre: { contains: terms[0] }},
+                { apell_paterno: { contains: terms[1]}},
+                { apell_materno: { contains: terms.slice(2).join(" ") } },
+              ],
+            };
+          }
         }
-      } else if (view === "roles") {
+      }
+      else if (view === "roles") {
         where = {
           AND: [
             usuario ? { usuario: { contains: usuario } } : {},
@@ -35,12 +63,30 @@ class UserController {
         };
       }
   
+      let prismaOrder = "asc";
+      if (sortOrder === "descend" || sortOrder === "desc") prismaOrder = "desc";
+      if (sortOrder === "ascend" || sortOrder === "asc") prismaOrder = "asc";
+  
+      let orderBy = { id: "asc" };
+  
+      if (sortField) {
+        if (sortField === "nombre_completo") {
+          orderBy = [
+            { nombre: prismaOrder },
+            { apell_paterno: prismaOrder },
+            { apell_materno: prismaOrder },
+          ];
+        } else {
+          orderBy = { [sortField]: prismaOrder };
+        }
+      }
+  
       const [usuarios, total] = await Promise.all([
         prisma.usuario.findMany({
           skip,
           take: limit,
           where,
-          orderBy: { id: "asc" },
+          orderBy,
           select:
             view === "general"
               ? {
@@ -77,7 +123,11 @@ class UserController {
         totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
-      res.status(500).json({ error: "Error al obtener usuarios", details: error.message });
+      console.error("❌ Error en getUsuarios:", error);
+      res.status(500).json({
+        error: "Error al obtener usuarios",
+        details: error.message,
+      });
     }
   }
   
