@@ -243,6 +243,19 @@ class UserController {
     res.json({ message: "Sesión cerrada con éxito" });
   }
   
+  static async getCurrentUser(req, res) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+  
+      res.json({ user: req.user });
+    } catch (err) {
+      res.status(500).json({ message: "Error al obtener usuario" });
+    }
+  }
+  
+
 }
 
 module.exports = UserController;

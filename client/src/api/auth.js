@@ -15,3 +15,8 @@ export const registerService = async (userData) => {
   const { data } = await API.post("/usuarios", userData);
   return data;
 };
+
+export const getCurrentUserService = async () => {
+  const { data } = await API.get("/usuarios/me", { withCredentials: true });
+  return data;
+};

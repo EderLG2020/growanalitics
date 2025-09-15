@@ -34,7 +34,7 @@ import {
   
         await createUsuario(payload);
         message.success("Usuario creado correctamente");
-        navigate("/"); // 👈 vuelve al login
+        navigate("/");
       } catch (error) {
         console.error("Error creando usuario:", error);
         message.error("No se pudo crear el usuario");

@@ -16,6 +16,6 @@ export const editUsuarios = async (id, payload) => {
 };
 
 export const createUsuario = async (payload) => {
-  const { data } = await axios.post("/usuarios", payload);
+  const { data } = await API.post("/usuarios", payload);
   return data;
 };

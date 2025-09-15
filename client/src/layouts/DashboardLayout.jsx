@@ -9,14 +9,16 @@ export default function DashboardLayout() {
   const { isDark } = useTheme();
   const colors = isDark ? themeColors.dark : themeColors.light;
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const username = storedUser?.usuario || "Invitado";
+
   return (
     <div className={`flex min-h-screen ${colors.background}`}>
-      {/* Sidebar */}
       <aside
         className={`w-64 p-6 transition-colors duration-300 ${colors.sidebar}`}
       >
         <h2 className={`text-xl font-bold mb-6 ${colors.text}`}>
-          Mi Sistema
+          {username}
         </h2>
 
         <nav className="flex flex-col space-y-2">
@@ -38,7 +40,6 @@ export default function DashboardLayout() {
         </nav>
       </aside>
 
-      {/* Contenedor principal */}
       <div className="flex flex-col flex-1">
         <Navbar />
         <main className="flex-1 p-6 overflow-y-auto">

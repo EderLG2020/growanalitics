@@ -11,7 +11,6 @@ export default function useTabla2(initialPageSize = 10) {
   });
   const [loading, setLoading] = useState(false);
 
-  // filtros de búsqueda
   const [searchText, setSearchText] = useState("");
   const debouncedSearch = useDebounce(searchText, 500);
 

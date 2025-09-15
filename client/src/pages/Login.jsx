@@ -31,17 +31,27 @@ const Login = () => {
         usuario: values.username,
         contrasena: values.password,
       };
-
+  
       const data = await loginService(payload);
-
+  
       console.log("Login exitoso:", data);
-      dispatch(loginSuccess(data.user)); // 👈 aquí va data completo
-navigate("/tabla1");
-      console.log("Se navego a tabla1?");
+  
+      const { nombre, tipo_usuario, correo, usuario } = data.user;
+  
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ nombre, tipo_usuario, correo, usuario })
+      );
+  
+      dispatch(loginSuccess(data.user));
+  
+      navigate("/tabla1");
+      console.log("Se navegó a tabla1?");
     } catch (error) {
       console.error("Error en login:", error);
     }
   };
+  
 
   return (
     <Row justify="center" align="middle" className="min-h-screen ">
