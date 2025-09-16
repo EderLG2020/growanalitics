@@ -1,35 +1,45 @@
+// TablaUsuarios.jsx
+import { useState } from "react";
 import { Table, Input, Button, Space, message } from "antd";
-import { EditOutlined, DeleteOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  LoadingOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import useUsuarios from "../hook/useUsuarios";
 import { openModal } from "../store/modalSlice";
 import { useTheme } from "../components/ThemeProvider";
 import { themeColors } from "../config/theme";
 import { deleteUsuarios } from "../api/users";
-import { useState } from "react";
 
 export default function TablaUsuarios() {
   const {
     data,
     pagination,
-    loading, 
+    loading,
     searchText,
     setSearchText,
+    filters,
+    setFilters,
     handleTableChange,
     loadData,
   } = useUsuarios();
 
-  const [loadingDeleteId, setLoadingDeleteId] = useState(null); 
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const dispatch = useDispatch();
   const { isDark } = useTheme();
+
   const colors = isDark ? themeColors.dark : themeColors.light;
 
-const handleEdit = (record) => {
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const handleEdit = (record) => {
     dispatch(
       openModal({
-        title: "Editar usuariod",
+        title: "Editar usuario",
         type: "editUser",
-        props: { 
+        props: {
           user: record,
           onSuccess: loadData,
         },
@@ -38,7 +48,6 @@ const handleEdit = (record) => {
       })
     );
   };
-  
 
   const handleDelete = (record) => {
     dispatch(
@@ -65,20 +74,70 @@ const handleEdit = (record) => {
       })
     );
   };
-  
+
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
+    filterDropdown: ({ close }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={placeholder}
+          value={filters[dataIndex]}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              [dataIndex]: e.target.value,
+            }))
+          }
+          onPressEnter={() => {
+            close();
+            setOpenDropdown(null);
+          }}
+          style={{ width: 188, marginBottom: 8, display: "block" }}
+        />
+      </div>
+    ),
+    filterIcon: (
+      <SearchOutlined
+        style={{ color: filters[dataIndex] ? "#1677ff" : undefined }}
+      />
+    ),
+    filterDropdownOpen: openDropdown === dataIndex,
+    onFilterDropdownOpenChange: (open) => {
+      console.log(`Dropdown ${dataIndex}:`, open);
+      setOpenDropdown(open ? dataIndex : null);
+    },
+  });
 
   const columns = [
-    { title: "ID", dataIndex: "id", sorter: true },
-    { title: "Usuario", dataIndex: "usuario", sorter: true },
-    { title: "Correo", dataIndex: "correo", sorter: true },
-    { title: "Nombre completo", dataIndex: "nombre_completo", sorter: true },
+    {
+      title: "ID",
+      dataIndex: "id",
+      sorter: true,
+      ...getColumnSearchProps("id", "Buscar ID"),
+    },
+    {
+      title: "Usuario",
+      dataIndex: "usuario",
+      sorter: true,
+      ...getColumnSearchProps("usuario", "Buscar usuario"),
+    },
+    {
+      title: "Correo",
+      dataIndex: "correo",
+      sorter: true,
+      ...getColumnSearchProps("correo", "Buscar correo"),
+    },
+    {
+      title: "Nombre completo",
+      dataIndex: "nombre_completo",
+      sorter: true,
+    },
     {
       title: "Acciones",
       render: (_, record) => (
         <Space>
           <Button
             icon={<EditOutlined />}
-            title="Boton para editar usuario"
+            title="Editar usuario"
             onClick={() => handleEdit(record)}
           />
           <Button
@@ -106,7 +165,6 @@ const handleEdit = (record) => {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 16, width: 300 }}
-        allowClear
       />
 
       <Table
@@ -121,17 +179,7 @@ const handleEdit = (record) => {
           index % 2 === 0 ? "alt-row" : "normal-row"
         }
         components={{
-          header: {
-            cell: (props) => (
-              <th
-                {...props}
-                style={{
-                  backgroundColor: colors.table.headerBg,
-                  color: colors.table.headerText,
-                }}
-              />
-            ),
-          },
+          
           body: {
             cell: (props) => (
               <td

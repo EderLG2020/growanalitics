@@ -38,7 +38,7 @@ export default function useTabla2(initialPageSize = 10) {
       setData(response.data);
       setPagination((prev) => ({
         ...prev,
-        current: (response.page ?? 1),   // 👈 si API ya es base 1, lo dejas así
+        current: (response.page ?? 1), 
         pageSize: params.pagination?.pageSize || prev.pageSize,
         total: response.total,
       }));

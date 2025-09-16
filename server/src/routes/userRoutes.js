@@ -9,7 +9,13 @@ const router = Router();
  * /usuarios:
  *   get:
  *     summary: Listado paginado de usuarios
+ *     description: |
+ *       Retorna una lista paginada de usuarios.  
+ *       - En `view=general` puedes usar búsqueda global (`search`) o filtros por campos individuales.  
+ *       - En `view=roles` puedes filtrar por `usuario` o `tipo_usuario`.  
  *     tags: [Usuarios]
+ *     security:
+ *       - cookieAuth: []   # Si usas JWT en cookies
  *     parameters:
  *       - in: query
  *         name: page
@@ -42,17 +48,42 @@ const router = Router();
  *           type: string
  *           enum: [ascend, descend]
  *           default: ascend
- *         description: Dirección del ordenamiento (el backend lo convierte a asc/desc)
+ *         description: Dirección del ordenamiento
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Texto para filtrar usuarios (solo aplica en `view=general`, busca en nombre, apell_paterno, apell_materno)
+ *         description: Texto de búsqueda global (aplica solo en `view=general`, busca en nombre, apell_paterno, apell_materno)
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: Filtro por ID (solo en `view=general`)
  *       - in: query
  *         name: usuario
  *         schema:
  *           type: string
- *         description: Filtro por usuario (solo aplica en `view=roles`)
+ *         description: Filtro por usuario (en `view=general` o `view=roles`)
+ *       - in: query
+ *         name: correo
+ *         schema:
+ *           type: string
+ *         description: Filtro por correo (solo en `view=general`)
+ *       - in: query
+ *         name: nombre
+ *         schema:
+ *           type: string
+ *         description: Filtro por nombre (solo en `view=general`)
+ *       - in: query
+ *         name: apell_paterno
+ *         schema:
+ *           type: string
+ *         description: Filtro por apellido paterno (solo en `view=general`)
+ *       - in: query
+ *         name: apell_materno
+ *         schema:
+ *           type: string
+ *         description: Filtro por apellido materno (solo en `view=general`)
  *       - in: query
  *         name: tipo_usuario
  *         schema:
@@ -71,7 +102,7 @@ const router = Router();
  *                   items:
  *                     oneOf:
  *                       - type: object
- *                         description: Vista general (view=general)
+ *                         description: Vista general (`view=general`)
  *                         properties:
  *                           id:
  *                             type: integer
@@ -86,7 +117,7 @@ const router = Router();
  *                             type: string
  *                             example: Juan Pérez López
  *                       - type: object
- *                         description: Vista roles (view=roles)
+ *                         description: Vista roles (`view=roles`)
  *                         properties:
  *                           id:
  *                             type: integer
@@ -107,8 +138,7 @@ const router = Router();
  *                   type: integer
  *                   example: 5
  */
-
-router.get("/",authMiddleware, UserController.getUsuarios);
+router.get("/", authMiddleware, UserController.getUsuarios);
 
 /**
  * @swagger
@@ -142,7 +172,7 @@ router.get("/",authMiddleware, UserController.getUsuarios);
  *                 type: string
  *                 format: email
  *                 description: |
- *                   Correo electrónico del usuario.  
+ *                   Correo electrónico del usuario.
  *                   Debe ser único en la plataforma.
  *                 example: juan@mail.com
  *               nombre:
@@ -205,9 +235,7 @@ router.get("/",authMiddleware, UserController.getUsuarios);
  *                   example: "El usuario ya está registrado"
  */
 
-
 router.post("/", UserController.createUsuario);
-
 
 /**
  * @swagger
@@ -245,9 +273,9 @@ router.post("/", UserController.createUsuario);
  *         description: Usuario eliminado con éxito
  */
 
-router.put("/:id", authMiddleware,UserController.updateUsuario);
+router.put("/:id", authMiddleware, UserController.updateUsuario);
 
-router.delete("/:id",authMiddleware, UserController.deleteUsuario);
+router.delete("/:id", authMiddleware, UserController.deleteUsuario);
 
 /**
  * @swagger
@@ -282,16 +310,15 @@ router.delete("/:id",authMiddleware, UserController.deleteUsuario);
  *         description: Credenciales inválidas
  */
 router.post("/login", UserController.login);
-
 /**
  * @swagger
  * /usuarios/logout:
  *   post:
  *     summary: Cerrar sesión de usuario
  *     description: |
- *       Finaliza la sesión actual del usuario.  
- *       - Si usas **JWT en cookies (httpOnly)**, el servidor limpiará la cookie que almacena el token.  
- *       - Si usas **JWT en headers**, el cliente simplemente debe descartar el token.  
+ *       Finaliza la sesión actual del usuario.
+ *       - Si usas **JWT en cookies (httpOnly)**, el servidor limpiará la cookie que almacena el token.
+ *       - Si usas **JWT en headers**, el cliente simplemente debe descartar el token.
  *     tags: [Usuarios]
  *     responses:
  *       200:
@@ -304,11 +331,57 @@ router.post("/login", UserController.login);
  *                 message:
  *                   type: string
  *                   example: Sesión cerrada con éxito
+ *       401:
+ *         description: Usuario no autenticado
  */
-
 router.post("/logout", UserController.logout);
 
-router.get("/me", authMiddleware, UserController.getCurrentUser);
+/**
+ * @swagger
+ * /usuarios/me:
+ *   get:
+ *     summary: Obtener información del usuario autenticado
+ *     description: |
+ *       Retorna los datos del usuario actual basados en el token de autenticación.
+ *       - Si el token está en cookies (httpOnly), se leerá automáticamente.
+ *       - Si usas headers, debes enviar `Authorization: Bearer <token>`.
+ *     tags: [Usuarios]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Datos del usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     usuario:
+ *                       type: string
+ *                       example: eder
+ *                     rol:
+ *                       type: string
+ *                       example: admin
+ *                     iat:
+ *                       type: number
+ *                       example: 1757974274
+ *                     exp:
+ *                       type: number
+ *                       example: 1757977874
+ *                          
+ * 
+ *       401:
+ *         description: No autenticado (sin token o token inválido)
+ *       500:
+ *         description: Error al obtener usuario
+ */
 
+router.get("/me", authMiddleware, UserController.getCurrentUser);
 
 module.exports = router;
