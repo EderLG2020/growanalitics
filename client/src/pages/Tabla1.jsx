@@ -34,6 +34,7 @@ export default function TablaUsuarios() {
   const colors = isDark ? themeColors.dark : themeColors.light;
 
   const [openDropdown, setOpenDropdown] = useState(null);
+
   const handleEdit = (record) => {
     dispatch(
       openModal({
@@ -102,7 +103,6 @@ export default function TablaUsuarios() {
     ),
     filterDropdownOpen: openDropdown === dataIndex,
     onFilterDropdownOpenChange: (open) => {
-      console.log(`Dropdown ${dataIndex}:`, open);
       setOpenDropdown(open ? dataIndex : null);
     },
   });
@@ -113,23 +113,27 @@ export default function TablaUsuarios() {
       dataIndex: "id",
       sorter: true,
       ...getColumnSearchProps("id", "Buscar ID"),
+      responsive: ["xs", "sm", "md", "lg", "xl"], // siempre visible
     },
     {
       title: "Usuario",
       dataIndex: "usuario",
       sorter: true,
       ...getColumnSearchProps("usuario", "Buscar usuario"),
+      responsive: ["xs", "sm", "md", "lg", "xl"], // siempre visible
     },
     {
       title: "Correo",
       dataIndex: "correo",
       sorter: true,
       ...getColumnSearchProps("correo", "Buscar correo"),
+      responsive: ["md"], // solo se muestra en >= pantallas medianas
     },
     {
       title: "Nombre completo",
       dataIndex: "nombre_completo",
       sorter: true,
+      responsive: ["lg"], // solo en pantallas grandes
     },
     {
       title: "Acciones",
@@ -155,11 +159,12 @@ export default function TablaUsuarios() {
           />
         </Space>
       ),
+      responsive: ["xs", "sm", "md", "lg", "xl"], // siempre visible
     },
   ];
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       <Input.Search
         placeholder="Buscar por nombre completo"
         value={searchText}
@@ -174,12 +179,12 @@ export default function TablaUsuarios() {
         pagination={pagination}
         loading={loading}
         onChange={handleTableChange}
+        scroll={{ x: "max-content" }}
         style={{ background: "transparent" }}
         rowClassName={(_, index) =>
           index % 2 === 0 ? "alt-row" : "normal-row"
         }
         components={{
-          
           body: {
             cell: (props) => (
               <td

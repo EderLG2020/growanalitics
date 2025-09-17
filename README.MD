@@ -5,6 +5,8 @@
 
 ---
 
+para docker en las variables de entorno colocar db en vez de localhost
+
 ##  Índice
 
 1. [Introducción](#introducción)  
@@ -202,8 +204,8 @@ npm run dev
 ##  Variables de entorno
 
 ###  SERVER (.env)
-- `DATABASE_URL` → cadena de conexión DB  
-- `SHADOW_DATABASE_URL` → DB shadow para migraciones  
+- `DATABASE_URL` → cadena de conexión DB  (localhost para local y db para docker)
+- `SHADOW_DATABASE_URL` → DB shadow para migraciones  (localhost para local y db para docker)
 - `JWT_SECRET` → clave para JWT  
 - `FAKER_GENERATE` → cantidad de usuarios a generar  
 - `NODE_ENV` → entorno (production/development)  

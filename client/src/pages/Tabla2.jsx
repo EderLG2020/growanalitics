@@ -190,6 +190,7 @@ export default function Tabla2() {
         pagination={pagination}
         loading={loading}
         onChange={handleTableChange}
+        scroll={{ x: "max-content" }}
       />
     </Form>
   );
